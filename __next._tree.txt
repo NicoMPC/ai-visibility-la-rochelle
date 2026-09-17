@@ -1,0 +1,2 @@
+:HL["/ai-visibility-la-rochelle/_next/static/chunks/3b6arc2ot_fyn.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}},"staleTime":300,"buildId":"0Ok5ndbYhFZtZzQppSZJC"}
