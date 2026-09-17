@@ -1,37 +1,29 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AGENCE_PRINCIPALE, QueryRow, queries } from "@/data/queries";
+import { QueryRow, queries } from "@/data/queries";
 import AgenciesRanking from "./AgenciesRanking";
-import Heatmap from "./Heatmap";
 
 type Filter = "all" | "yes" | "no";
 
-function isVisible(row: QueryRow) {
-  return row.agencies.includes(AGENCE_PRINCIPALE);
-}
-
 function QueryCard({ row }: { row: QueryRow }) {
-  const visible = isVisible(row);
-  const others = row.agencies.filter((a) => a !== AGENCE_PRINCIPALE);
-
   return (
     <article
       className={
         "rounded-xl border p-4 sm:p-5 " +
-        (visible
+        (row.visible
           ? "border-line-hair bg-surface"
           : "border-status-critical/30 bg-status-critical/[0.04]")
       }
     >
-      <div className="mb-1.5 flex items-start justify-between gap-3">
-        <span className="tabular pt-0.5 text-xs font-medium text-ink-muted">
-          {String(row.id).padStart(2, "0")}
-        </span>
+      <div className="mb-2 flex items-start justify-between gap-3">
+        <h3 className="text-[15px] font-semibold leading-snug text-ink-primary sm:text-base">
+          {row.query}
+        </h3>
         <span
           className={
             "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold " +
-            (visible
+            (row.visible
               ? "bg-status-good/10 text-status-good"
               : "bg-status-critical/10 text-status-critical")
           }
@@ -39,22 +31,16 @@ function QueryCard({ row }: { row: QueryRow }) {
           <span
             className={
               "h-1.5 w-1.5 rounded-full " +
-              (visible ? "bg-status-good" : "bg-status-critical")
+              (row.visible ? "bg-status-good" : "bg-status-critical")
             }
           />
-          {visible ? "OUI" : "NON"}
+          {row.visible ? "OUI" : "NON"}
         </span>
       </div>
 
-      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-ink-primary sm:text-base">
-        {row.query}
-      </h3>
-
-      <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-muted">
-        Autres agences
-      </p>
       <p className="text-sm leading-relaxed text-ink-secondary">
-        {others.join(" · ")}
+        <span className="text-ink-muted">Autres acteurs visibles : </span>
+        {row.agencies.join(" · ")}
       </p>
     </article>
   );
@@ -63,12 +49,12 @@ function QueryCard({ row }: { row: QueryRow }) {
 export default function Dashboard() {
   const [filter, setFilter] = useState<Filter>("all");
 
-  const yesCount = queries.filter(isVisible).length;
+  const yesCount = queries.filter((q) => q.visible).length;
   const noCount = queries.length - yesCount;
 
   const filtered = useMemo(() => {
-    if (filter === "yes") return queries.filter(isVisible);
-    if (filter === "no") return queries.filter((q) => !isVisible(q));
+    if (filter === "yes") return queries.filter((q) => q.visible);
+    if (filter === "no") return queries.filter((q) => !q.visible);
     return queries;
   }, [filter]);
 
@@ -89,11 +75,11 @@ export default function Dashboard() {
           LA ROCHELLE
         </h1>
         <p className="mt-1.5 text-sm text-ink-secondary sm:mt-3 sm:text-lg">
-          20 recherches vendeurs · visibilité des agences immobilières locales
+          Benchmark de visibilité — recherches immobilières orientées vendeur
         </p>
       </header>
 
-      {/* Stats */}
+      {/* KPI */}
       <section className="mb-5 grid grid-cols-2 gap-3 sm:mb-10 sm:gap-5">
         <div className="rounded-xl border border-status-good/30 bg-status-good/[0.04] p-4 sm:p-6">
           <p className="tabular text-3xl font-bold text-status-good sm:text-5xl">
@@ -103,7 +89,7 @@ export default function Dashboard() {
             </span>
           </p>
           <p className="mt-1 text-xs font-medium text-ink-secondary sm:text-sm">
-            Agence Principale visible
+            requêtes où Agence Principale est visible
           </p>
         </div>
         <div className="rounded-xl border border-status-critical/30 bg-status-critical/[0.04] p-4 sm:p-6">
@@ -114,7 +100,7 @@ export default function Dashboard() {
             </span>
           </p>
           <p className="mt-1 text-xs font-medium text-ink-secondary sm:text-sm">
-            Agence Principale absente
+            requêtes où elle n&rsquo;est pas visible
           </p>
         </div>
       </section>
@@ -144,23 +130,23 @@ export default function Dashboard() {
         ))}
       </section>
 
-      {/* Agencies ranking */}
+      {/* Agencies visible in the results — secondary section */}
       <section className="mb-10">
         <AgenciesRanking queries={queries} />
       </section>
 
-      {/* Heatmap — desktop only, avoids horizontal scroll on mobile */}
-      <section className="mb-10 hidden lg:block">
-        <Heatmap queries={queries} />
-      </section>
-
       <footer className="border-t border-line-hair pt-4 text-xs leading-relaxed text-ink-muted sm:pt-6">
-        Relevé manuel de recherches réelles pour «&nbsp;Agence
-        Principale&nbsp;» (La Rochelle). OUI signifie qu&rsquo;Agence
-        Principale figure parmi les agences observées pour cette recherche ;
-        NON signifie qu&rsquo;elle n&rsquo;y figure pas. Pas de score ni de
-        position précise — les résultats varient selon le moteur, la
-        localisation et le moment de la recherche.
+        <p className="font-semibold text-ink-secondary">Méthodologie</p>
+        <p className="mt-1.5">
+          Benchmark réalisé à partir de recherches web locales portant sur des
+          intentions de vente immobilière à La Rochelle. La présence est
+          considérée comme OUI lorsqu&rsquo;Agence Principale apparaît dans
+          les résultats observés pour la requête, et NON lorsqu&rsquo;elle
+          n&rsquo;y apparaît pas. Les résultats des moteurs peuvent varier
+          selon le moment, l&rsquo;appareil, la localisation et la
+          personnalisation. Ce benchmark ne constitue pas une garantie de
+          positionnement Google ni de réponse ChatGPT.
+        </p>
       </footer>
     </main>
   );

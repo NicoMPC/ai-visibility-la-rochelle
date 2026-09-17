@@ -14,14 +14,9 @@ const config: Config = {
         },
         line: {
           hair: "#e1e0d9",
-          baseline: "#c3c2b7",
-        },
-        accent: {
-          DEFAULT: "#2a78d6",
         },
         status: {
           good: "#0ca30c",
-          warning: "#c98500",
           critical: "#d03b3b",
         },
       },

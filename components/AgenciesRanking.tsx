@@ -1,4 +1,4 @@
-import { AGENCE_PRINCIPALE, QueryRow } from "@/data/queries";
+import { QueryRow } from "@/data/queries";
 
 export default function AgenciesRanking({ queries }: { queries: QueryRow[] }) {
   const counts = new Map<string, number>();
@@ -12,47 +12,20 @@ export default function AgenciesRanking({ queries }: { queries: QueryRow[] }) {
   return (
     <div className="rounded-xl border border-line-hair bg-surface p-4 sm:p-6">
       <h2 className="text-base font-semibold text-ink-primary sm:text-lg">
-        Agences les plus visibles
+        Agences visibles dans les recherches
       </h2>
-      <p className="mt-1 text-xs text-ink-secondary sm:text-sm">
-        Nombre de requêtes (sur {queries.length}) où l&rsquo;agence apparaît.
-      </p>
 
-      <ol className="mt-4 divide-y divide-line-hair">
-        {ranked.map(([agency, count], i) => {
-          const isAP = agency === AGENCE_PRINCIPALE;
-          return (
-            <li
-              key={agency}
-              className="flex items-center justify-between gap-3 py-2.5"
-            >
-              <span className="flex items-center gap-3">
-                <span className="tabular w-5 text-sm text-ink-muted">
-                  {i + 1}
-                </span>
-                <span
-                  className={
-                    "text-sm " +
-                    (isAP
-                      ? "font-semibold text-ink-primary"
-                      : "text-ink-secondary")
-                  }
-                >
-                  {agency}
-                </span>
-              </span>
-              <span
-                className={
-                  "tabular text-sm " +
-                  (isAP ? "font-semibold text-accent" : "text-ink-muted")
-                }
-              >
-                {count}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+      <ul className="mt-3 divide-y divide-line-hair">
+        {ranked.map(([agency, count]) => (
+          <li
+            key={agency}
+            className="flex items-center justify-between gap-3 py-2.5 text-sm"
+          >
+            <span className="text-ink-secondary">{agency}</span>
+            <span className="tabular text-ink-muted">{count}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
