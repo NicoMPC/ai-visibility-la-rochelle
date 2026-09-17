@@ -21,3 +21,14 @@ Puis ouvrir http://localhost:3000
 npm run build
 npm run start
 ```
+
+## Démo en ligne
+
+https://nicompc.github.io/ai-visibility-la-rochelle/
+
+Déployée sur GitHub Pages (branche `gh-pages`, générée par `next export`).
+Pour republier après une modification :
+
+```bash
+npm run deploy
+```
